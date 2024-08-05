@@ -14,6 +14,7 @@ import {
   IProjectService,
   NodeConfig,
   IBlockchainService,
+  ISubqueryProject,
 } from '../';
 import { BlockHeightMap } from '../utils/blockHeightMap';
 import { DictionaryService } from './dictionary/dictionary.service';
