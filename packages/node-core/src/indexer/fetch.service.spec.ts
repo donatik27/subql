@@ -17,12 +17,11 @@ import {
 } from '../';
 import { BlockHeightMap } from '../utils/blockHeightMap';
 import { DictionaryService } from './dictionary/dictionary.service';
-import { BaseFetchService } from './fetch.service';
+import { FetchService } from './fetch.service';
 
 const CHAIN_INTERVAL = 100; // 100ms
-const genesisHash = '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3';
 
-class TestFetchService extends BaseFetchService<BaseDataSource, IBlockDispatcher<any>, any> {
+class TestFetchService extends FetchService<BaseDataSource, IBlockDispatcher<any>, any> {
   finalizedHeight = 1000;
   bestHeight = 20;
 
@@ -30,22 +29,6 @@ class TestFetchService extends BaseFetchService<BaseDataSource, IBlockDispatcher
     dataSources: BaseDataSource<BaseHandler<any>, BaseMapping<BaseHandler<any>>>[]
   ): DictionaryQueryEntry[] {
     return [];
-  }
-  getGenesisHash(): string {
-    return genesisHash;
-  }
-  async getBestHeight(): Promise<number> {
-    return Promise.resolve(this.bestHeight);
-  }
-  protected async getChainInterval(): Promise<number> {
-    return Promise.resolve(CHAIN_INTERVAL);
-  }
-
-  protected async initBlockDispatcher(): Promise<void> {
-    return Promise.resolve();
-  }
-  async preLoopHook(data: { startHeight: number }): Promise<void> {
-    return Promise.resolve();
   }
 
   protected getModulos(dataSources: BaseDataSource[]): number[] {

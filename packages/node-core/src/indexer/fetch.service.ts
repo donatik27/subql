@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import assert from 'assert';
-import { OnApplicationShutdown } from '@nestjs/common';
+import { Inject, OnApplicationShutdown } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { BaseDataSource } from '@subql/types-core';
@@ -41,9 +41,9 @@ export abstract class BaseFetchService<DS extends BaseDataSource, B extends IBlo
     protected dictionaryService: DictionaryService<DS, FB>,
     private eventEmitter: EventEmitter2,
     private schedulerRegistry: SchedulerRegistry,
-    private unfinalizedBlocksService: IUnfinalizedBlocksServiceUtil,
+    @Inject('IUnfinalizedBlocksService') private unfinalizedBlocksService: IUnfinalizedBlocksServiceUtil,
     private storeCacheService: StoreCacheService,
-    private blockchainSevice: IBlockchainService<DS>
+    @Inject('IBlockchainService') private blockchainSevice: IBlockchainService<DS>
   ) {}
 
   private get latestBestHeight(): number {
@@ -105,8 +105,7 @@ export abstract class BaseFetchService<DS extends BaseDataSource, B extends IBlo
     this.updateDictionary();
     // Find one usable dictionary at start
 
-    await this.preLoopHook({ startHeight });
-    await this.initBlockDispatcher();
+    await this.blockDispatcher.init(this.resetForNewDs.bind(this));
 
     void this.startLoop(startHeight);
   }
