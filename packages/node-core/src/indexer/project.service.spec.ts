@@ -38,27 +38,27 @@ class TestBlockchainService implements IBlockchainService {
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   fetchBlocks(blockNums: number[]): Promise<IBlock<any>[]> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method fetchBlocks not implemented.');
   }
 
   onProjectChange(project: ISubqueryProject): Promise<void> | void {
-    throw new Error('Method not implemented.');
+    // throw new Error('Method onProjectChange not implemented.');
   }
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   getBlockTimestamp(height: number): Promise<Date | undefined> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method getBlockTimestamp not implemented.');
   }
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   getBestHeight(): Promise<number> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method getBestHeight not implemented.');
   }
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   getChainInterval(): Promise<number> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method getChainInterval not implemented.');
   }
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   updateDynamicDs(params: DatasourceParams, template: any): Promise<void> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method updateDynamicDs not implemented.');
   }
   isCustomDs(x: any): x is any {
     return false;

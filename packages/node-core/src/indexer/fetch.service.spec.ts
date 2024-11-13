@@ -1,15 +1,9 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { SchedulerRegistry } from '@nestjs/schedule';
-import {
-  BaseCustomDataSource,
-  BaseDataSource,
-  BaseHandler,
-  BaseMapping,
-  DictionaryQueryEntry,
-} from '@subql/types-core';
+import {EventEmitter2} from '@nestjs/event-emitter';
+import {SchedulerRegistry} from '@nestjs/schedule';
+import {BaseCustomDataSource, BaseDataSource, BaseHandler, BaseMapping, DictionaryQueryEntry} from '@subql/types-core';
 import {
   UnfinalizedBlocksService,
   BlockDispatcher,
@@ -23,14 +17,19 @@ import {
   ISubqueryProject,
   DatasourceParams,
   IBaseIndexerWorker,
+  BypassBlocks,
 } from '../';
-import { BlockHeightMap } from '../utils/blockHeightMap';
-import { DictionaryService } from './dictionary/dictionary.service';
-import { FetchService } from './fetch.service';
+import {BlockHeightMap} from '../utils/blockHeightMap';
+import {DictionaryService} from './dictionary/dictionary.service';
+import {FetchService} from './fetch.service';
 
 const CHAIN_INTERVAL = 100; // 100ms
 
 class TestFetchService extends FetchService<BaseDataSource, IBlockDispatcher<any>, any> {
+  setBypassBlocks(blocks: BypassBlocks) {
+    this.projectService.bypassBlocks = blocks;
+  }
+
   protected buildDictionaryQueryEntries(
     dataSources: BaseDataSource<BaseHandler<any>, BaseMapping<BaseHandler<any>>>[]
   ): DictionaryQueryEntry[] {
@@ -74,12 +73,12 @@ class TestBlockchainService implements IBlockchainService {
   fetchBlockWorker(
     worker: IBaseIndexerWorker,
     blockNum: number,
-    context: { workers: IBaseIndexerWorker[] }
+    context: {workers: IBaseIndexerWorker[]}
   ): Promise<void> {
     throw new Error('Method not implemented.');
   }
   async getFinalizedHeader(): Promise<Header> {
-    return Promise.resolve({ blockHeight: this.finalizedHeight, blockHash: '0xxx', parentHash: '0xxx' });
+    return Promise.resolve({blockHeight: this.finalizedHeight, blockHash: '0xxx', parentHash: '0xxx'});
   }
   async getBestHeight(): Promise<number> {
     return Promise.resolve(this.bestHeight);
@@ -154,7 +153,7 @@ function mockModuloDs(startBlock: number, endBlock: number, modulo: number): Bas
         {
           kind: 'mock/Handler',
           handler: 'mockFunction',
-          filter: { modulo: modulo },
+          filter: {modulo: modulo},
         },
       ],
     },
@@ -162,26 +161,26 @@ function mockModuloDs(startBlock: number, endBlock: number, modulo: number): Bas
 }
 
 const getDictionaryService = () =>
-({
-  useDictionary: () => {
-    return false;
-  },
-  findDictionary: () => {
-    /* TODO*/
-  },
-  buildDictionaryEntryMap: () => {
-    /* TODO*/
-  },
-  initValidation: () => {
-    /* TODO */
-  },
-  scopedDictionaryEntries: () => {
-    /* TODO */
-  },
-  initDictionaries: () => {
-    /* TODO */
-  },
-} as any as DictionaryService<any, any>);
+  ({
+    useDictionary: () => {
+      return false;
+    },
+    findDictionary: () => {
+      /* TODO*/
+    },
+    buildDictionaryEntryMap: () => {
+      /* TODO*/
+    },
+    initValidation: () => {
+      /* TODO */
+    },
+    scopedDictionaryEntries: () => {
+      /* TODO */
+    },
+    initDictionaries: () => {
+      /* TODO */
+    },
+  }) as any as DictionaryService<any, any>;
 
 const getBlockDispatcher = () => {
   const inst = {
@@ -296,20 +295,20 @@ describe('Fetch Service', () => {
 
   const moduloBlockHeightMap = new BlockHeightMap(
     new Map([
-      [1, [{ ...mockModuloDs(1, 100, 20), startBlock: 1, endBlock: 100 }]],
+      [1, [{...mockModuloDs(1, 100, 20), startBlock: 1, endBlock: 100}]],
       [
         101, // empty gap for discontinuous block
         [],
       ],
-      [201, [{ ...mockModuloDs(201, 500, 30), startBlock: 201, endBlock: 500 }]],
+      [201, [{...mockModuloDs(201, 500, 30), startBlock: 201, endBlock: 500}]],
       // to infinite
-      [500, [{ ...mockModuloDs(500, Number.MAX_SAFE_INTEGER, 99), startBlock: 500 }]],
+      [500, [{...mockModuloDs(500, Number.MAX_SAFE_INTEGER, 99), startBlock: 500}]],
       // multiple ds
       [
         600,
         [
-          { ...mockModuloDs(500, 800, 99), startBlock: 600, endBlock: 800 },
-          { ...mockModuloDs(700, Number.MAX_SAFE_INTEGER, 101), startBlock: 700 },
+          {...mockModuloDs(500, 800, 99), startBlock: 600, endBlock: 800},
+          {...mockModuloDs(700, Number.MAX_SAFE_INTEGER, 101), startBlock: 700},
         ],
       ],
     ])
@@ -327,43 +326,43 @@ describe('Fetch Service', () => {
           [
             1,
             [
-              { ...mockDs, startBlock: 1, endBlock: 300 },
-              { ...mockDs, startBlock: 1, endBlock: 100 },
+              {...mockDs, startBlock: 1, endBlock: 300},
+              {...mockDs, startBlock: 1, endBlock: 100},
             ],
           ],
           [
             10,
             [
-              { ...mockDs, startBlock: 1, endBlock: 300 },
-              { ...mockDs, startBlock: 1, endBlock: 100 },
-              { ...mockDs, startBlock: 10, endBlock: 20 },
+              {...mockDs, startBlock: 1, endBlock: 300},
+              {...mockDs, startBlock: 1, endBlock: 100},
+              {...mockDs, startBlock: 10, endBlock: 20},
             ],
           ],
           [
             21,
             [
-              { ...mockDs, startBlock: 1, endBlock: 300 },
-              { ...mockDs, startBlock: 1, endBlock: 100 },
+              {...mockDs, startBlock: 1, endBlock: 300},
+              {...mockDs, startBlock: 1, endBlock: 100},
             ],
           ],
           [
             50,
             [
-              { ...mockDs, startBlock: 1, endBlock: 300 },
-              { ...mockDs, startBlock: 1, endBlock: 100 },
-              { ...mockDs, startBlock: 50, endBlock: 200 },
+              {...mockDs, startBlock: 1, endBlock: 300},
+              {...mockDs, startBlock: 1, endBlock: 100},
+              {...mockDs, startBlock: 50, endBlock: 200},
             ],
           ],
           [
             101,
             [
-              { ...mockDs, startBlock: 1, endBlock: 300 },
-              { ...mockDs, startBlock: 50, endBlock: 200 },
+              {...mockDs, startBlock: 1, endBlock: 300},
+              {...mockDs, startBlock: 50, endBlock: 200},
             ],
           ],
-          [201, [{ ...mockDs, startBlock: 1, endBlock: 300 }]],
+          [201, [{...mockDs, startBlock: 1, endBlock: 300}]],
           [301, []],
-          [500, [{ ...mockDs, startBlock: 500 }]],
+          [500, [{...mockDs, startBlock: 500}]],
         ])
       )
     );
@@ -499,7 +498,7 @@ describe('Fetch Service', () => {
                   {
                     kind: 'mock/BlockHandler',
                     handler: 'mockFunction',
-                    filter: { modulo: 3 },
+                    filter: {modulo: 3},
                   },
                   {
                     kind: 'mock/CallHandler',
@@ -632,7 +631,7 @@ describe('Fetch Service', () => {
 
   it('enqueues modulo blocks with furture dataSources', async () => {
     fetchService.mockGetModulos([3]);
-    dataSources.push({ ...mockDs, startBlock: 20 });
+    dataSources.push({...mockDs, startBlock: 20});
 
     await fetchService.init(1);
 
@@ -645,7 +644,7 @@ describe('Fetch Service', () => {
   it('at the end of modulo block filter, enqueue END should be min of data source range end height and api last height', async () => {
     // So this will skip next data source
     fetchService.mockGetModulos([10]);
-    dataSources.push({ ...mockDs, startBlock: 200 });
+    dataSources.push({...mockDs, startBlock: 200});
     await fetchService.init(191);
 
     expect((fetchService as any).useDictionary).toBeFalsy();
@@ -653,7 +652,7 @@ describe('Fetch Service', () => {
   });
 
   it('skips bypassBlocks', async () => {
-    (fetchService as any).networkConfig.bypassBlocks = [3];
+    fetchService.setBypassBlocks([3]);
 
     await fetchService.init(1);
 
@@ -664,7 +663,7 @@ describe('Fetch Service', () => {
 
   it('transforms bypassBlocks', async () => {
     // Set a range so on init its transformed
-    (fetchService as any).networkConfig.bypassBlocks = ['2-5'];
+    fetchService.setBypassBlocks(['2-5']);
 
     await fetchService.init(1);
 
